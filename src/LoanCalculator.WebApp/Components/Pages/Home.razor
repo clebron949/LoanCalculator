@@ -5,7 +5,7 @@
 @inject ILogger<Home> Logger
 @inject NavigationManager NavigationManager
 
-<div class="text-center mb-4">
+<div class="text-center mb-5">
     <h3 class="display-4">Loan Calculator</h3>
     <h4 style="color: #0d7bba">by GotYourSoftware</h4>
 </div>
@@ -13,7 +13,7 @@
 <div class="row justify-content-center">
     <div class="col-12 col-sm-8 col-lg-4">
         <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit"
-            class="d-flex flex-column gap-4">
+            class="d-flex flex-column gap-5">
             <DataAnnotationsValidator />
 
             <InputRadioGroup @bind-Value="Model.IsFullLoanAmount">

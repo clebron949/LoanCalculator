@@ -1,0 +1,89 @@
+@page "/results"
+@using LoanCalculator.WebApp.LoanCalculations
+
+@inject ILogger<LoanResultsPage> Logger
+@inject LoanCalculationsService LoanCalculationsService
+
+<div class="d-flex flex-column gap-4">
+    <div>
+        <h3 class="text-center ">Your Loan Summary</h3>
+    </div>
+
+    <div class="row row-gap-4 justify-content-around">
+        <div class="rounded col-md-5 text-center" style="background-color: #0d7bba; color: white;">
+            <p class="text-center" style="padding-left: 15px; padding-top: 15px"><strong><i>Your Loan Terms</i></strong>
+            </p>
+            <p style="padding-left: 15px"><b>Amount:</b> $@Results!.Amount.ToString("N2")</p>
+            <p style="padding-left: 15px"><b>Rate:</b> @Results!.Rate.ToString("P2")</p>
+            <p style="padding-left: 15px"><b>Length:</b> @Results!.Terms.ToString() years</p>
+        </div>
+        <div class="rounded col-md-5 text-center" style="background-color: #0d7bba; color: white;">
+            <p class="text-center" style="padding-left: 15px; padding-top: 15px"><strong><i>Your Payments</i></strong>
+            </p>
+            <p style="padding-left: 15px"><b>Montly Payment:</b> @Results!.MonthlyPayment</p>
+            <p style="padding-left: 15px"><b>Yearly Payment:</b> @Results!.YearlyPayment</p>
+            <p style="padding-left: 15px"><b>Total Interest Paid:</b> @Results!.TotalInterest</p>
+        </div>
+    </div>
+
+    <div>
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <th class="text-center"> Year</th>
+                <th class="text-center"> Beginning Balance</th>
+                <th class="text-center"> Interest Paid</th>
+                <th class="text-center"> Principal Paid</th>
+                <th class="text-center"> Remaining Principal</th>
+            </thead>
+            <tbody>
+            @foreach (var item in Results!.AmortizationTable)
+            {
+                <tr>
+                    <td class="text-center">
+                        @item.Years
+                    </td>
+                    <td class="text-center">
+                        @item.BeginningBalance
+                    </td>
+                    <td class="text-center">
+                        @item.InterestPaid
+                    </td>
+                    <td class="text-center">
+                        @item.PrincipalPaid
+                    </td>
+                    <td class="text-center">
+                        @item.RemainingPrincipal
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div>
+        <NavLink
+            href="@($"/?Amount={Amount}&Rate={Rate}&Terms={Terms}&IsFullLoanAmount={IsFullLoanAmount}")"
+            style="color: #0d7bba; text-decoration: none">
+            Back to Home
+        </NavLink>
+
+    </div>
+</div>
+
+@code {
+    [Parameter, SupplyParameterFromQuery] public double Amount { get; set; } = 0;
+
+    [Parameter, SupplyParameterFromQuery] public double Rate { get; set; } = 0;
+
+    [Parameter, SupplyParameterFromQuery] public int Terms { get; set; } = 0;
+
+    [Parameter, SupplyParameterFromQuery] public bool IsFullLoanAmount { get; set; } = true;
+
+    private LoanResults? Results { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        Results = LoanCalculationsService.CalculateLoan(Amount, Rate, Terms);
+    }
+
+}

@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  loan-calculator:
+    build:
+      context: ./src
+      dockerfile: dockerfile
+    container_name: loan-calculator-app
+    ports:
+      - "5080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+    restart: unless-stopped

@@ -1,0 +1,33 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page">
+    <main class="d-flex flex-column min-vh-100">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
+            <div class="container">
+                <NavLink href="/" class="navbar-brand" aria-label="Home">
+                    <img src="/imgs/calculator-icon.png" alt="Calculator" height="30" width="30">
+                </NavLink>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </nav>
+
+        <article class="content px-4 h-100">
+            @Body
+        </article>
+        <footer class="border-top footer text-muted py-3">
+            <div class="container text-center">
+                <strong>&copy; @DateTime.Now.Year.ToString() - </strong>
+                <i><strong style="color: #0d7bba">GotYourSoftware</strong></i>
+            </div>
+        </footer>
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

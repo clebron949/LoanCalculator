@@ -1,0 +1,130 @@
+﻿@page "/"
+@using System.ComponentModel.DataAnnotations
+@using LoanCalculator.WebApp.LoanCalculations
+
+@inject ILogger<Home> Logger
+@inject NavigationManager NavigationManager
+
+<div class="text-center mb-4">
+    <h3 class="display-4">Loan Calculator</h3>
+    <h4 style="color: #0d7bba">by GotYourSoftware</h4>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-sm-8 col-lg-4">
+        <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit"
+            class="d-flex flex-column gap-4">
+            <DataAnnotationsValidator />
+
+            <InputRadioGroup @bind-Value="Model.IsFullLoanAmount">
+                <div class="d-flex justify-content-center gap-3">
+                    <div class="form-check">
+                        <InputRadio Value="true" id="fullLoanAmount" class="form-check-input" />
+                        <label class="form-check-label" for="fullLoanAmount">
+                            Full Loan Amount
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <InputRadio Value="false" id="monthlyPayment" class="form-check-input" />
+                        <label class="form-check-label" for="monthlyPayment">
+                            Monthly Payment
+                        </label>
+                    </div>
+                </div>
+            </InputRadioGroup>
+
+            <div class="form-group row gap-2">
+                <label for="amount" id="amount-label" class="text-start">Enter Loan Amount:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <InputNumber @bind-Value="Model.Amount" type="text" class="form-control text-center" />
+                </div>
+            </div>
+
+            <div class="form-group row gap-2">
+                <label for="rate" id="rate-label" class="text-start">Enter Loan Rate:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">%</span>
+                    </div>
+                    <InputNumber @bind-Value="Model.Rate" type="text" class="form-control text-center" />
+                </div>
+            </div>
+
+            <div class="form-group row gap-2">
+                <label for="terms" id="terms-label" class="text-start">Enter Loan Terms:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Yr</span>
+                    </div>
+                    <InputNumber DisplayName="Terms" @bind-Value="Model.Terms" type="text"
+                        class="form-control text-center" />
+                </div>
+            </div>
+
+            @if (editContext?.GetValidationMessages().Any() == true)
+            {
+                <div class="alert alert-danger">
+                    <ValidationSummary class="px-5" />
+                </div>
+            }
+
+            <div class="">
+                <button type="submit" class="btn btn-primary w-100">Submit</button>
+            </div>
+        </EditForm>
+
+    </div>
+</div>
+
+@code {
+    [Parameter, SupplyParameterFromQuery] public double Amount { get; set; } = 0;
+
+    [Parameter, SupplyParameterFromQuery] public double Rate { get; set; } = 0;
+
+    [Parameter, SupplyParameterFromQuery] public int Terms { get; set; } = 0;
+
+    [Parameter, SupplyParameterFromQuery] public bool IsFullLoanAmount { get; set; } = true;
+
+    public FormModel Model { get; set; } = new();
+    private EditContext? editContext;
+
+    protected override void OnParametersSet()
+    {
+        if (Amount > 0) Model.Amount = (decimal)Amount;
+        if (Rate > 0) Model.Rate = (decimal)Rate;
+        if (Terms > 0) Model.Terms = Terms;
+        Model.IsFullLoanAmount = IsFullLoanAmount;
+    }
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(Model);
+    }
+
+    private void OnValidSubmit(EditContext obj)
+    {
+        var parameters = new LoanParameters(Model.Amount, Model.Rate, Model.Terms);
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters("/results", parameters.ToDictionary()));
+    }
+
+    public class FormModel
+    {
+        [Required(ErrorMessage = "Amount is required")]
+        [Range(1, double.MaxValue, ErrorMessage = "Amount must be greater than 0")]
+        public decimal Amount { get; set; } = 10000;
+
+        [Required(ErrorMessage = "Rate is required")]
+        [Range(0.01, 100, ErrorMessage = "Rate must be between 0.01% and 100%")]
+        public decimal Rate { get; set; }
+
+        [Required(ErrorMessage = "Terms is required")]
+        [Range(1, 50, ErrorMessage = "Terms must be between 1 and 50 years")]
+        public int Terms { get; set; }
+        public bool IsFullLoanAmount { get; set; } = true;
+    }
+
+
+}

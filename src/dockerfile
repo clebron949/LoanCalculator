@@ -30,6 +30,10 @@ COPY --from=build /app/publish .
 EXPOSE 8080
 
 # Set environment variables
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends locales \
+    && locale-gen en_US.UTF-8
+
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
